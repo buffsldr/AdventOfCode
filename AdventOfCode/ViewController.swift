@@ -25,7 +25,8 @@ class ViewController: UIViewController {
         guard let fileUrl = Bundle.main.url(forResource: "file", withExtension: "txt") else { fatalError() }
 
         let list = try! DeserializeRawData.processFrom(fileUrl: fileUrl)
-        let execution = ExecuteInstruction(instructionList: list)
+        let execution = ExecuteInstruction()
+
         let startingRegisterValues: RegisterValues = [ Register.a: 0,
                                                        Register.b: 0,
                                                        Register.c: 0,
@@ -36,7 +37,7 @@ class ViewController: UIViewController {
                                                        Register.h: 0
         ]
 
-        let allInstructions = execution.requestInstructionExecutionOrder(startingAt: 0, withRegisterValues: startingRegisterValues, rollingInstructions: [])
+        let allInstructions = ExecuteInstruction.requestInstructionExecutionOrder(startingAt: 0, withRegisterValues: startingRegisterValues, rollingInstructions: [], instructionList: list)
         let multiplyInstructions = allInstructions.filter { instruction -> Bool in
             return instruction.action == Action.multiplied
         }

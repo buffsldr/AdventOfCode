@@ -10,16 +10,7 @@ import Foundation
 
 struct ExecuteInstruction {
 
-    let instructionList: [RealInstruction]
-
-    init(instructionList: [RealInstruction]) {
-        self.instructionList = instructionList
-        instructionListHistory = [instructionList]
-    }
-
-    var instructionListHistory = [[RealInstruction]]()
-
-    func requestInstructionExecutionOrder(startingAt index:Int, withRegisterValues: RegisterValues, rollingInstructions: [RealInstruction]) -> [RealInstruction] {
+    static func requestInstructionExecutionOrder(startingAt index:Int, withRegisterValues: RegisterValues, rollingInstructions: [RealInstruction], instructionList: [RealInstruction]) -> [RealInstruction] {
         guard index < instructionList.count && index > -1 else {
             return rollingInstructions
         }
@@ -33,32 +24,32 @@ struct ExecuteInstruction {
         case .jumped where localX != 0 :
             let updatedIndex = index + localY
 
-            return  requestInstructionExecutionOrder(startingAt:updatedIndex,  withRegisterValues: withRegisterValues,  rollingInstructions: updatedRollingInstructions)
+            return  requestInstructionExecutionOrder(startingAt:updatedIndex,  withRegisterValues: withRegisterValues,  rollingInstructions: updatedRollingInstructions, instructionList: instructionList)
         case .multiplied:
             let newValueAtX = localX * localY
             let registerAtX = actualInstruction.xRegister!
             mutableRegisterValues.updateValue(newValueAtX, forKey: registerAtX)
             let updatedIndex = index + 1
 
-            return requestInstructionExecutionOrder(startingAt:updatedIndex,  withRegisterValues: mutableRegisterValues,  rollingInstructions: updatedRollingInstructions)
+            return requestInstructionExecutionOrder(startingAt:updatedIndex,  withRegisterValues: mutableRegisterValues,  rollingInstructions: updatedRollingInstructions, instructionList: instructionList)
         case .subtracted:
             let newValueAtX = localX - localY
             let registerAtX = actualInstruction.xRegister!
             mutableRegisterValues.updateValue(newValueAtX, forKey: registerAtX)
             let updatedIndex = index + 1
 
-            return requestInstructionExecutionOrder(startingAt:updatedIndex,  withRegisterValues: mutableRegisterValues,  rollingInstructions: updatedRollingInstructions)
+            return requestInstructionExecutionOrder(startingAt:updatedIndex,  withRegisterValues: mutableRegisterValues,  rollingInstructions: updatedRollingInstructions, instructionList: instructionList)
         case .updated:
             let newValueAtX = localY
             let registerAtX = actualInstruction.xRegister!
             mutableRegisterValues.updateValue(newValueAtX, forKey: registerAtX)
             let updatedIndex = index + 1
 
-            return requestInstructionExecutionOrder(startingAt:updatedIndex,  withRegisterValues: mutableRegisterValues,  rollingInstructions: updatedRollingInstructions)
+            return requestInstructionExecutionOrder(startingAt:updatedIndex,  withRegisterValues: mutableRegisterValues,  rollingInstructions: updatedRollingInstructions, instructionList: instructionList)
         case .jumped:
             let updatedIndex = index + 1
 
-            return requestInstructionExecutionOrder(startingAt:updatedIndex,  withRegisterValues: withRegisterValues,  rollingInstructions: updatedRollingInstructions)
+            return requestInstructionExecutionOrder(startingAt:updatedIndex,  withRegisterValues: withRegisterValues,  rollingInstructions: updatedRollingInstructions, instructionList: instructionList)
         }
     }
 

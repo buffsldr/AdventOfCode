@@ -35,8 +35,7 @@ class ExecutionTests: XCTestCase {
         let theBundle = Bundle(for: ExecutionTests.self)
         guard let fileUrl = theBundle.url(forResource: "simpleFile", withExtension: "txt") else { fatalError() }
         let list = try! DeserializeRawData.processFrom(fileUrl: fileUrl)
-        let execution = ExecuteInstruction(instructionList: list)
-        let allInstructions = execution.requestInstructionExecutionOrder(startingAt: 0, withRegisterValues: [:], rollingInstructions: [])
+        let allInstructions = ExecuteInstruction.requestInstructionExecutionOrder(startingAt: 0, withRegisterValues: [:], rollingInstructions: [], instructionList: list)
         let multiplyInstructions = allInstructions.filter { instruction -> Bool in
             return instruction.action == Action.multiplied
         }
@@ -50,8 +49,7 @@ class ExecutionTests: XCTestCase {
         let theBundle = Bundle(for: ExecutionTests.self)
         guard let fileUrl = theBundle.url(forResource: "subtractTest", withExtension: "txt") else { fatalError() }
         let list = try! DeserializeRawData.processFrom(fileUrl: fileUrl)
-        let execution = ExecuteInstruction(instructionList: list)
-        let allInstructions = execution.requestInstructionExecutionOrder(startingAt: 0, withRegisterValues: [:], rollingInstructions: [])
+        let allInstructions = ExecuteInstruction.requestInstructionExecutionOrder(startingAt: 0, withRegisterValues: [:], rollingInstructions: [], instructionList: list)
         let multiplyInstructions = allInstructions.filter { instruction -> Bool in
             return instruction.action == Action.multiplied
         }
@@ -63,8 +61,7 @@ class ExecutionTests: XCTestCase {
         let theBundle = Bundle(for: ExecutionTests.self)
         guard let fileUrl = theBundle.url(forResource: "addFile", withExtension: "txt") else { fatalError() }
         let list = try! DeserializeRawData.processFrom(fileUrl: fileUrl)
-        let execution = ExecuteInstruction(instructionList: list)
-        let allInstructions = execution.requestInstructionExecutionOrder(startingAt: 0, withRegisterValues: [:], rollingInstructions: [])
+        let allInstructions = ExecuteInstruction.requestInstructionExecutionOrder(startingAt: 0, withRegisterValues: [:], rollingInstructions: [], instructionList: list)
         let multiplyInstructions = allInstructions.filter { instruction -> Bool in
             return instruction.action == Action.multiplied
         }
@@ -76,8 +73,7 @@ class ExecutionTests: XCTestCase {
         let theBundle = Bundle(for: ExecutionTests.self)
         guard let fileUrl = theBundle.url(forResource: "jumpZeroFile", withExtension: "txt") else { fatalError() }
         let list = try! DeserializeRawData.processFrom(fileUrl: fileUrl)
-        let execution = ExecuteInstruction(instructionList: list)
-        let allInstructions = execution.requestInstructionExecutionOrder(startingAt: 0, withRegisterValues: [:], rollingInstructions: [])
+        let allInstructions = ExecuteInstruction.requestInstructionExecutionOrder(startingAt: 0, withRegisterValues: [:], rollingInstructions: [], instructionList: list)
         let multiplyInstructions = allInstructions.filter { instruction -> Bool in
             return instruction.action == Action.multiplied
         }

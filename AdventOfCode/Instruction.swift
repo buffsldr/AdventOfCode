@@ -18,19 +18,13 @@ enum Action: String, Codable {
 
 }
 
-enum Register: String, Codable {
+enum Register: String, Codable, ThirdColumn {
 
     case a, b, c, d, e, f, g, h
 
 }
 
 typealias RegisterValues = [Register: Int]
-
-protocol GivesValue {
-
-
-
-}
 
 struct ValuedRegister: Codable {
 
@@ -70,7 +64,7 @@ enum ActionType: Decodable, Equatable {
             let register = try values.decode(Register.self, forKey: .instructionLocation)
             self = .instructionLocation(register)
         } catch {
-            self = .math
+            throw ColumnReadError.yValueMissing
         }
     }
 
@@ -100,25 +94,17 @@ struct Instruction: Decodable {
         do {
             type = try container.decode(ActionType.self, forKey: .type)
         } catch {
-            type = ActionType.math
+            throw ColumnReadError.yValueMissing
         }
         action = try container.decode(Action.self, forKey: .action)
     }
 
 }
 
-extension Register: ThirdColumn {
+extension Register {
 
     func getValueFrom(registerValues: RegisterValues) -> Int? {
         return registerValues[self]
-    }
-
-}
-
-extension Int: ThirdColumn {
-
-    func getValueFrom(registerValues: RegisterValues) -> Int? {
-        return self
     }
 
 }
@@ -152,9 +138,7 @@ struct RealInstruction: Codable {
         return valueFromDictionary
     }
 
-    func updatedUsing(x: Int) -> RealInstruction {
-        return RealInstruction(action: action, xRegister: xRegister, xValue: x, yRegister: yRegister, yValue: yValue)
-    }
+
 
 }
 
@@ -211,7 +195,7 @@ struct DeserializeRawData {
                     return try JSONDecoder().decode(RealInstruction.self, from: rawJSON)
                 }
             } catch DecodingError.dataCorrupted(let context) {
-                let a = 123
+                throw ColumnReadError.yValueMissing
             } catch {
                 throw ColumnReadError.yValueMissing
             }

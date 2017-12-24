@@ -88,9 +88,11 @@ class InstructionTests: XCTestCase {
         do {
             let realInstruction = try JSONDecoder().decode(RealInstruction.self, from: realInstructionFromJumperData)
             XCTAssertNotNil(realInstruction)
-            XCTAssertEqual(realInstruction.xValue, 55)
+            let localX = realInstruction.requestXValueFrom(registerValues: sampleData)
+            let localY = realInstruction.requestYValueFrom(registerValues: sampleData)
+            XCTAssertEqual(localX, 55)
             XCTAssertEqual(realInstruction.action, Action.jumped)
-            XCTAssertEqual(realInstruction.yValue, 33)
+            XCTAssertEqual(localY, 33)
 
 
         } catch DecodingError.dataCorrupted(let context) {
@@ -104,7 +106,7 @@ class InstructionTests: XCTestCase {
         var sampleData: RegisterValues = [Register.h: 42]
         do {
             let realInstruction = try JSONDecoder().decode(RealInstruction.self, from: realInstructionDataWithRegisterPointer)
-            let theValueFromFunction = realInstruction.requestThirdColumnValueFrom(registerValues: sampleData)
+            let theValueFromFunction = realInstruction.requestYValueFrom(registerValues: sampleData)
             XCTAssertEqual(42, theValueFromFunction)
         } catch DecodingError.dataCorrupted(let context) {
             XCTFail()
@@ -133,7 +135,9 @@ class InstructionTests: XCTestCase {
             XCTAssertNotNil(realInstruction)
             XCTAssertEqual(realInstruction.action, Action.updated)
             XCTAssertEqual(realInstruction.xRegister, Register.a)
-            XCTAssertEqual(realInstruction.yValue, 12)
+            let localX = realInstruction.requestXValueFrom(registerValues: [:])
+            let localY = realInstruction.requestYValueFrom(registerValues:  [:])
+            XCTAssertEqual(localY, 12)
         } catch DecodingError.dataCorrupted(let context) {
             XCTFail()
         } catch {
@@ -181,7 +185,9 @@ class InstructionTests: XCTestCase {
 
     func testRunIt() {
         do {
-            let realInstructions = try DeserializeRawData.process()
+            let theBundle = Bundle(for: ExecutionTests.self)
+            guard let fileUrl = theBundle.url(forResource: "file", withExtension: "txt") else { fatalError() }
+            let realInstructions = try! DeserializeRawData.processFrom(fileUrl: fileUrl)
             XCTAssertNotNil(realInstructions)
         } catch DecodingError.dataCorrupted(let context) {
             XCTFail()
@@ -192,7 +198,9 @@ class InstructionTests: XCTestCase {
 
     func testRun14() {
         do {
-            let realInstructions = try DeserializeRawData.process()
+            let theBundle = Bundle(for: ExecutionTests.self)
+            guard let fileUrl = theBundle.url(forResource: "file", withExtension: "txt") else { fatalError() }
+            let realInstructions = try! DeserializeRawData.processFrom(fileUrl: fileUrl)
             let item14 = realInstructions[13]
 //            sub g b
             XCTAssertEqual(item14.action, Action.subtracted)

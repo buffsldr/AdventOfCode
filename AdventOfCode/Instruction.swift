@@ -79,7 +79,7 @@ enum ActionType: Decodable, Equatable {
 
 protocol ThirdColumn {
 
-    func getValueFrom(registerValues: RegisterValues) -> Int
+    func getValueFrom(registerValues: RegisterValues) -> Int?
 
 }
 
@@ -105,20 +105,19 @@ struct Instruction: Decodable {
         action = try container.decode(Action.self, forKey: .action)
     }
 
-
 }
 
 extension Register: ThirdColumn {
 
-    func getValueFrom(registerValues: RegisterValues) -> Int {
-        return registerValues[self] ?? 0
+    func getValueFrom(registerValues: RegisterValues) -> Int? {
+        return registerValues[self]
     }
 
 }
 
 extension Int: ThirdColumn {
 
-    func getValueFrom(registerValues: RegisterValues) -> Int {
+    func getValueFrom(registerValues: RegisterValues) -> Int? {
         return self
     }
 
@@ -131,18 +130,30 @@ struct RealInstruction: Codable {
 
     //Second Column
     let xRegister: Register?
-    let xValue: Int?
+    private let xValue: Int?
 
     //Third Column
     let yRegister: Register?
-    let yValue: Int?
+    private let yValue: Int?
 
-    func requestThirdColumnValueFrom(registerValues: RegisterValues) -> Int {
-        guard let valueFromRaw = yValue else {
-            return yRegister?.getValueFrom(registerValues: registerValues) ?? 0
+    func requestXValueFrom(registerValues: RegisterValues) -> Int {
+        guard let valueFromDictionary = xRegister?.getValueFrom(registerValues: registerValues) else {
+            return xValue ?? 0
         }
 
-        return valueFromRaw
+        return valueFromDictionary
+    }
+
+    func requestYValueFrom(registerValues: RegisterValues) -> Int {
+        guard let valueFromDictionary = yRegister?.getValueFrom(registerValues: registerValues) else {
+            return yValue ?? 0
+        }
+
+        return valueFromDictionary
+    }
+
+    func updatedUsing(x: Int) -> RealInstruction {
+        return RealInstruction(action: action, xRegister: xRegister, xValue: x, yRegister: yRegister, yValue: yValue)
     }
 
 }
@@ -155,8 +166,7 @@ enum ColumnReadError: Error {
 
 struct DeserializeRawData {
 
-    static func process() throws -> [RealInstruction] {
-        guard let fileUrl = Bundle.main.url(forResource: "file", withExtension: "txt") else { fatalError() }
+    static func processFrom(fileUrl: URL) throws -> [RealInstruction] {
         let rawLines = try! String(contentsOf: fileUrl, encoding: .utf8).components(separatedBy: "\n").filter({ theStrings -> Bool in
             return theStrings.count > 0
         })

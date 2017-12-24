@@ -11,7 +11,6 @@ import XCTest
 
 class InstructionTests: XCTestCase {
 
-
     let instructionData = """
         {
             "action": "set",
@@ -45,7 +44,7 @@ class InstructionTests: XCTestCase {
         {
             "action": "set",
             "xRegister": "a",
-            "rawValue": 12
+            "yValue": 12
         }
     """.data(using: .utf8)!
 
@@ -53,7 +52,7 @@ class InstructionTests: XCTestCase {
         {
             "action": "set",
             "xRegister": "a",
-            "registerPointer": "h"
+            "yRegister": "h"
         }
     """.data(using: .utf8)!
 
@@ -61,9 +60,28 @@ class InstructionTests: XCTestCase {
         {
             "action": "jnz",
             "xValue": 55,
-            "rawValue": 33
+            "yValue": 33
         }
     """.data(using: .utf8)!
+
+    let noFailData = """
+        {
+            "action": "set",
+            "xRegister": "b",
+            "yValue": 65
+        }
+    """.data(using: .utf8)!
+
+    func testNoFail() {
+        do {
+            let realInstruction = try JSONDecoder().decode(RealInstruction.self, from: noFailData)
+            XCTAssertNotNil(realInstruction)
+        } catch DecodingError.dataCorrupted(let context) {
+            XCTFail()
+        } catch {
+            XCTFail()
+        }
+    }
 
     func testJumperData() {
         var sampleData: RegisterValues = [Register.h: 42]
@@ -72,7 +90,7 @@ class InstructionTests: XCTestCase {
             XCTAssertNotNil(realInstruction)
             XCTAssertEqual(realInstruction.xValue, 55)
             XCTAssertEqual(realInstruction.action, Action.jumped)
-            XCTAssertEqual(realInstruction.rawValue, 33)
+            XCTAssertEqual(realInstruction.yValue, 33)
 
 
         } catch DecodingError.dataCorrupted(let context) {
@@ -101,7 +119,7 @@ class InstructionTests: XCTestCase {
             XCTAssertNotNil(realInstruction)
             XCTAssertEqual(realInstruction.action, Action.updated)
             XCTAssertEqual(realInstruction.xRegister, Register.a)
-            XCTAssertEqual(realInstruction.registerPointer, Register.h)
+            XCTAssertEqual(realInstruction.yRegister, Register.h)
         } catch DecodingError.dataCorrupted(let context) {
             XCTFail()
         } catch {
@@ -115,7 +133,7 @@ class InstructionTests: XCTestCase {
             XCTAssertNotNil(realInstruction)
             XCTAssertEqual(realInstruction.action, Action.updated)
             XCTAssertEqual(realInstruction.xRegister, Register.a)
-            XCTAssertEqual(realInstruction.rawValue, 12)
+            XCTAssertEqual(realInstruction.yValue, 12)
         } catch DecodingError.dataCorrupted(let context) {
             XCTFail()
         } catch {
@@ -154,6 +172,34 @@ class InstructionTests: XCTestCase {
             let instruction = try JSONDecoder().decode(Instruction.self, from: instructionMathData)
             XCTAssertNotNil(instruction)
             XCTAssertEqual(instruction.type, ActionType.math)
+        } catch DecodingError.dataCorrupted(let context) {
+            XCTFail()
+        } catch {
+            XCTFail()
+        }
+    }
+
+    func testRunIt() {
+        do {
+            let realInstructions = try DeserializeRawData.process()
+            XCTAssertNotNil(realInstructions)
+        } catch DecodingError.dataCorrupted(let context) {
+            XCTFail()
+        } catch {
+            XCTFail()
+        }
+    }
+
+    func testRun14() {
+        do {
+            let realInstructions = try DeserializeRawData.process()
+            let item14 = realInstructions[13]
+//            sub g b
+            XCTAssertEqual(item14.action, Action.subtracted)
+            XCTAssertEqual(item14.xRegister, Register.g)
+            XCTAssertEqual(item14.yRegister, Register.b)
+
+
         } catch DecodingError.dataCorrupted(let context) {
             XCTFail()
         } catch {

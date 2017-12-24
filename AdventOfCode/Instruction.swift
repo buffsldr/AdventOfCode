@@ -126,16 +126,20 @@ extension Int: ThirdColumn {
 
 struct RealInstruction: Codable {
 
+    //First Column
     let action: Action
 
+    //Second Column
     let xRegister: Register?
     let xValue: Int?
-    let registerPointer: Register?
-    let rawValue: Int?
+
+    //Third Column
+    let yRegister: Register?
+    let yValue: Int?
 
     func requestThirdColumnValueFrom(registerValues: RegisterValues) -> Int {
-        guard let valueFromRaw = rawValue else {
-            return registerPointer?.getValueFrom(registerValues: registerValues) ?? 0
+        guard let valueFromRaw = yValue else {
+            return yRegister?.getValueFrom(registerValues: registerValues) ?? 0
         }
 
         return valueFromRaw
@@ -143,35 +147,70 @@ struct RealInstruction: Codable {
 
 }
 
+enum ColumnReadError: Error {
+
+    case yValueMissing
+
+}
+
 struct DeserializeRawData {
 
-    static func process(string: String) -> [RealInstruction] {
+    static func process() throws -> [RealInstruction] {
         guard let fileUrl = Bundle.main.url(forResource: "file", withExtension: "txt") else { fatalError() }
-        let rawLines = try! String(contentsOf: fileUrl, encoding: .utf8).components(separatedBy: "\n")
-        let instructions = rawLines.map { rawLine -> RealInstruction in
-            let lineArray = rawLine.components(separatedBy: .whitespaces)
-            if let xValueFound = Int(lineArray[1]), lineArray[0] == "jnz" {
-                let rawJSON = """
-                    {
-                    "action" = \(lineArray[0])",
-                    "xValue" = \(xValueFound)",
-                    }
-                    """
-            } else {
+        let rawLines = try! String(contentsOf: fileUrl, encoding: .utf8).components(separatedBy: "\n").filter({ theStrings -> Bool in
+            return theStrings.count > 0
+        })
 
+        let instructions = try rawLines.map { rawLine -> RealInstruction in
+            do {
+                let lineArray = rawLine.components(separatedBy: .whitespaces)
+
+                if let xValueFound = Int(lineArray[1]), let yValueFound = Int(lineArray[2]), lineArray[0] == "jnz" {
+                    let rawJSON = """
+                        {
+                            "action": "\(lineArray[0])",
+                            "xValue": \(xValueFound),
+                            "yValue": \(yValueFound)
+                        }
+                        """.data(using: .utf8)!
+
+                    return try JSONDecoder().decode(RealInstruction.self, from: rawJSON)
+                } else if let yValueFound = Int(lineArray[2])  {
+                    // In this case we are not a jumper
+                    let rawJSONString = """
+                        {
+                            "action": "\(lineArray[0])",
+                            "xRegister": "\(lineArray[1])",
+                            "yValue": \(yValueFound)
+                        }
+                        """
+
+                        let rawJSON = rawJSONString.data(using: .utf8)!
+
+                    return try JSONDecoder().decode(RealInstruction.self, from: rawJSON)
+                } else {
+                    // In this case we are not a jumper and we have a pointer at Y not a raw value at Y
+                    let rawJSON = """
+                        {
+                            "action": "\(lineArray[0])",
+                            "xRegister": "\(lineArray[1])",
+                            "yRegister": "\(lineArray[2])"
+                        }
+                        """.data(using: .utf8)!
+
+                    return try JSONDecoder().decode(RealInstruction.self, from: rawJSON)
+                }
+            } catch DecodingError.dataCorrupted(let context) {
+                let a = 123
+            } catch {
+                throw ColumnReadError.yValueMissing
             }
-            let rawJSON = """
-            {
-                "action" = \(lineArray[0])",
-                "xRegister" = \(lineArray[1])",
-            }
-            """
-            return RealInstruction(action: Action.jumped, xRegister: Register.a, xValue: 0, registerPointer: nil, rawValue: nil)
+
+            throw ColumnReadError.yValueMissing
         }
 
-        return [RealInstruction]()
+        return instructions
     }
-
 
 }
 

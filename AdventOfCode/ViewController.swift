@@ -13,9 +13,9 @@ class ViewController: UIViewController {
     @IBOutlet weak var multiplyCountLabel: UILabel?
 
     @IBAction func runItTapped(_ sender: UIButton) {
-        //        let davesCode = Day23().run()
+     let g12214 = Day23().run()
 
-
+//return
         guard let fileUrl = Bundle.main.url(forResource: "file", withExtension: "txt") else { fatalError() }
         let list = try! DeserializeRawData.processFrom(fileUrl: fileUrl)
         let startingRegisterValues: RegisterValues = [ Register.a: 0,
@@ -28,16 +28,12 @@ class ViewController: UIViewController {
                                                        Register.h: 0
         ]
 
-        let allInstructions = ExecuteInstruction.requestInstructionExecutionOrder(startingAt: 0, withRegisterValues: startingRegisterValues, rollingInstructions: [], instructionList: list)
-        let multiplyInstructions = allInstructions.filter { instruction -> Bool in
-            return instruction.action == Action.multiplied
-        }
+        
+        let p = ExecuteInstruction(instructionList: list)
+        while p.step() == .ok { }
 
-        let countFound = multiplyInstructions.count
+        print("Found count to be \(p.multiplyCount)")
 
-        let countString = String(countFound)
-
-        multiplyCountLabel?.text = countString
     }
 
 }

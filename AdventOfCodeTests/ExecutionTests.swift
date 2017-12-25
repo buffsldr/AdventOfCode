@@ -60,25 +60,28 @@ class ExecutionTests: XCTestCase {
     func testAddition() {
         let theBundle = Bundle(for: ExecutionTests.self)
         guard let fileUrl = theBundle.url(forResource: "addFile", withExtension: "txt") else { fatalError() }
-        let list = try! DeserializeRawData.processFrom(fileUrl: fileUrl)
-        let allInstructions = ExecuteInstruction.requestInstructionExecutionOrder(startingAt: 0, withRegisterValues: [:], rollingInstructions: [], instructionList: list)
-        let multiplyInstructions = allInstructions.filter { instruction -> Bool in
-            return instruction.action == Action.multiplied
+        let list = try? DeserializeRawData.processFrom(fileUrl: fileUrl)
+        if let theList = list {
+            let allInstructions = ExecuteInstruction.requestInstructionExecutionOrder(startingAt: 0, withRegisterValues: [:], rollingInstructions: [], instructionList: theList)
+            let multiplyInstructions = allInstructions.filter { instruction -> Bool in
+                return instruction.action == Action.multiplied
+            }
+            let lastInstruction = allInstructions.last!
+            let expectedRegisterXValue = lastInstruction
         }
-        let lastInstruction = allInstructions.last!
-        let expectedRegisterXValue = lastInstruction
+
     }
 
     func testJumpZero() {
         let theBundle = Bundle(for: ExecutionTests.self)
         guard let fileUrl = theBundle.url(forResource: "jumpZeroFile", withExtension: "txt") else { fatalError() }
-        let list = try! DeserializeRawData.processFrom(fileUrl: fileUrl)
-        let allInstructions = ExecuteInstruction.requestInstructionExecutionOrder(startingAt: 0, withRegisterValues: [:], rollingInstructions: [], instructionList: list)
-        let multiplyInstructions = allInstructions.filter { instruction -> Bool in
-            return instruction.action == Action.multiplied
-        }
-        let lastInstruction = allInstructions.last!
-        let expectedRegisterXValue = lastInstruction
+        let list = try? DeserializeRawData.processFrom(fileUrl: fileUrl)
+//        let allInstructions = ExecuteInstruction.requestInstructionExecutionOrder(startingAt: 0, withRegisterValues: [:], rollingInstructions: [], instructionList: list)
+//        let multiplyInstructions = allInstructions.filter { instruction -> Bool in
+//            return instruction.action == Action.multiplied
+//        }
+//        let lastInstruction = allInstructions.last!
+//        let expectedRegisterXValue = lastInstruction
     }
 
 }

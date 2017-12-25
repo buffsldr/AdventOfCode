@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct DeserializeRawData {
+final class DeserializeRawData {
 
     static func processFrom(fileUrl: URL) throws -> [RealInstruction] {
         let rawLines = try! String(contentsOf: fileUrl, encoding: .utf8).components(separatedBy: "\n").filter({ theStrings -> Bool in

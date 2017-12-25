@@ -14,8 +14,10 @@ enum Register: String, Codable {
 
     case a, b, c, d, e, f, g, h
 
-    func getValueFrom(registerValues: RegisterValues) -> Int? {
-        return registerValues[self]
+     enum CodingKeys : String, CodingKey {
+
+        case a, b, c, d, e, f, g, h
+
     }
 
 }

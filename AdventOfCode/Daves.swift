@@ -71,8 +71,16 @@ class Day23: Day {
 
             func eval(with registers: Registers) -> Int {
                 switch self {
-                case .register(let r): return registers[r] ?? 0
-                case .value(let i): return i
+                case .register(let r):
+                    let theAnswer = registers[r] ?? 0
+                    if r == "b" && theAnswer == 1 {
+
+
+                        print("Bingo")
+                    }
+                    return theAnswer
+                case .value(let i):
+                    return i
                 }
             }
         }
@@ -100,7 +108,14 @@ class Day23: Day {
     class Program {
         private var reg = Registers()
         private let instructions: Array<Instruction>
-        private var index = 0
+        private var index = 0 {
+            didSet {
+                if index == 19 {
+
+//                    print("heading to 19")
+                }
+            }
+        }
 
         var mulCount = 0
 
@@ -115,7 +130,15 @@ class Day23: Day {
 
         func step() -> Result {
             // return .waiting if we rcv but don't have a value
-            guard index < instructions.count else { return .done }
+//            print("Dave at \(index)")
+
+            guard index < instructions.count else {
+
+              print("index at catch is \(index)")
+                print("Dave Found count to be \(mulCount)")
+
+                return .done
+            }
             let inst = instructions[index]
             switch inst {
             case .set(let r, let arg):
@@ -144,7 +167,7 @@ class Day23: Day {
 //                    print("Dave says jump to \(index)")
                 } else {
                     let updatedIndex = index + 1
-                    print("Dave says benign jump to  newXvalue to \(updatedIndex)")
+//                    print("Dave says benign jump to  newXvalue to \(updatedIndex)")
 
                     index += 1
                 }

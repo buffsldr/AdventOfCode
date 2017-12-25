@@ -21,23 +21,22 @@ class RealInstruction: Codable {
     let yRegister: Register?
     private let yValue: Int?
 
-    func requestXValueFrom(registerValues: RegisterValues) -> Int {
-        guard let valueFromDictionary = xRegister?.getValueFrom(registerValues: registerValues) else {
+    func requestXValueFrom(registerValues: [String: Int]) -> Int {
+        guard let key = xRegister?.rawValue, let value = registerValues[key] else {
+
             return xValue ?? 0
         }
 
-        return valueFromDictionary
+        return value
     }
 
-    func requestYValueFrom(registerValues: RegisterValues) -> Int {
-        if action == .jumped {
-            return yValue!
-        }
-        guard let valueFromDictionary = yRegister?.getValueFrom(registerValues: registerValues) else {
+    func requestYValueFrom(registerValues: [String: Int]) -> Int {
+        guard let key = yRegister?.rawValue, let value = registerValues[key] else {
+
             return yValue ?? 0
         }
 
-        return valueFromDictionary
+        return value
     }
 
 }

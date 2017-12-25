@@ -21,26 +21,28 @@ struct DeserializeRawData {
 
                 if let yValueFound = Int(lineArray[2]), lineArray[0] == "jnz" {
                     if let xValueFound = Int(lineArray[1]) {
-                        let rawJSON = """
+                        let rawJSONString = """
                             {
                             "action": "\(lineArray[0])",
                             "xValue": \(xValueFound),
                             "yValue": \(yValueFound)
                             }
-                            """.data(using: .utf8)!
+                            """
+                        let rawJSONData = rawJSONString.data(using: .utf8)!
 
-                        return try JSONDecoder().decode(RealInstruction.self, from: rawJSON)
+                        return try JSONDecoder().decode(RealInstruction.self, from: rawJSONData)
                     } else {
                         // it is a register
-                        let rawJSON = """
-                            {
-                            "action": "\(lineArray[0])",
-                            "xRegister": "\(lineArray[1])",
-                            "yValue": \(yValueFound)
-                            }
-                            """.data(using: .utf8)!
+                        let rawJSONString = """
+                        {
+                        "action": "\(lineArray[0])",
+                        "xRegister": "\(lineArray[1])",
+                        "yValue": \(yValueFound)
+                        }
+                        """
 
-                        return try JSONDecoder().decode(RealInstruction.self, from: rawJSON)
+                        let rawJSONData = rawJSONString.data(using: .utf8)!
+                        return try JSONDecoder().decode(RealInstruction.self, from: rawJSONData)
                     }
 
                 } else if let yValueFound = Int(lineArray[2])  {

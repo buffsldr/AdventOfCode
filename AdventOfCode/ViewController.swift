@@ -13,6 +13,9 @@ class ViewController: UIViewController {
     @IBOutlet weak var multiplyCountLabel: UILabel?
 
     @IBAction func runItTapped(_ sender: UIButton) {
+//        let g12214 = Day23().run()
+
+
         guard let fileUrl = Bundle.main.url(forResource: "file", withExtension: "txt") else { fatalError() }
         let list = try! DeserializeRawData.processFrom(fileUrl: fileUrl)
         let startingRegisterValues: RegisterValues = [ Register.a: 0,

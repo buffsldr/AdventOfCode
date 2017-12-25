@@ -9,7 +9,6 @@
 
 import Foundation
 
-
 protocol Day {
     init()
     func run() -> (String, String)
@@ -121,19 +120,32 @@ class Day23: Day {
             switch inst {
             case .set(let r, let arg):
                 index += 1
+                let newValueAtX = arg.eval(with: reg)
+//                print("Dave says set to  newXvalue of \(newValueAtX)")
+
                 reg[r] = arg.eval(with: reg)
             case .sub(let r, let arg):
                 index += 1
+                let newValueAtX = reg[r, default: 0] - arg.eval(with: reg)
+
                 reg[r, default: 0] -= arg.eval(with: reg)
             case .mul(let r, let arg):
                 index += 1
                 mulCount += 1
+                let newValueAtX = reg[r, default: 0] * arg.eval(with: reg)
+
+//                print("Dave says multiply to  newXvalue of \(newValueAtX)")
+
                 reg[r, default: 0] *= arg.eval(with: reg)
             case .jump(let r, let arg):
                 let val = r.eval(with: reg)
                 if val != 0 {
                     index += arg.eval(with: reg)
+//                    print("Dave says jump to \(index)")
                 } else {
+                    let updatedIndex = index + 1
+                    print("Dave says benign jump to  newXvalue to \(updatedIndex)")
+
                     index += 1
                 }
             }
@@ -163,8 +175,6 @@ class Day23: Day {
     }
 
 }
-
-
 
 extension Day {
     fileprivate func execute() -> TimeInterval {

@@ -80,6 +80,29 @@ class InstructionTests: XCTestCase {
         }
     """.data(using: .utf8)!
 
+    let jumpRegisterStyleData = """
+        {
+            "action": "jnz",
+            "xRegister": "b",
+            "yValue": 1
+        }
+    """.data(using: .utf8)!
+
+    func testBuildJumpRegisterStyle() {
+        do {
+            let realInstruction = try JSONDecoder().decode(RealInstruction.self, from: jumpRegisterStyleData)
+            let xRegister = realInstruction.xRegister!
+            let yRegister = realInstruction.yRegister
+            XCTAssertEqual(xRegister, Register.b)
+            XCTAssertNil(yRegister)
+            XCTAssertNotNil(realInstruction)
+        } catch DecodingError.dataCorrupted(_) {
+            XCTFail()
+        } catch {
+            XCTFail()
+        }
+    }
+
     func testNoFail() {
         do {
             let realInstruction = try JSONDecoder().decode(RealInstruction.self, from: noFailData)
@@ -192,10 +215,10 @@ class InstructionTests: XCTestCase {
         let theBundle = Bundle(for: ExecutionTests.self)
         guard let fileUrl = theBundle.url(forResource: "file", withExtension: "txt") else { fatalError() }
         let realInstructions = try? DeserializeRawData.processFrom(fileUrl: fileUrl)
-        let item14 = realInstructions[13]
-        XCTAssertEqual(item14.action, Action.subtracted)
-        XCTAssertEqual(item14.xRegister, Register.g)
-        XCTAssertEqual(item14.yRegister, Register.b)
+        let item14 = realInstructions?[13]
+        XCTAssertEqual(item14?.action, Action.subtracted)
+        XCTAssertEqual(item14?.xRegister, Register.g)
+        XCTAssertEqual(item14?.yRegister, Register.b)
     }
 
 }

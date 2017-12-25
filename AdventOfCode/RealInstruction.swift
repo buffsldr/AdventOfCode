@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct RealInstruction: Codable {
+class RealInstruction: Codable {
 
     //First Column
     let action: Action
@@ -30,6 +30,9 @@ struct RealInstruction: Codable {
     }
 
     func requestYValueFrom(registerValues: RegisterValues) -> Int {
+        if action == .jumped {
+            return yValue!
+        }
         guard let valueFromDictionary = yRegister?.getValueFrom(registerValues: registerValues) else {
             return yValue ?? 0
         }

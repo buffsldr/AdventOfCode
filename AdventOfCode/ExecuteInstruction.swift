@@ -26,33 +26,43 @@ struct ExecuteInstruction {
         switch actualInstruction.action {
         case .jumped where localX != 0:
             let updatedIndex = index + localY
+//            print("Mark says jump to \(updatedIndex)")
+            let instructionListCopy = instructionList
 
-            return  requestInstructionExecutionOrder(startingAt:updatedIndex,  withRegisterValues: withRegisterValues,  rollingInstructions: updatedRollingInstructions, instructionList: instructionList)
+            return  ExecuteInstruction.requestInstructionExecutionOrder(startingAt:updatedIndex,  withRegisterValues: withRegisterValues,  rollingInstructions: updatedRollingInstructions, instructionList: instructionListCopy)
         case .jumped:
             let updatedIndex = index + 1
+            let instructionListCopy = instructionList
+//            print("Mark says benign jump to  newXvalue to \(updatedIndex)")
 
-            return requestInstructionExecutionOrder(startingAt:updatedIndex,  withRegisterValues: withRegisterValues,  rollingInstructions: updatedRollingInstructions, instructionList: instructionList)
+            return ExecuteInstruction.requestInstructionExecutionOrder(startingAt:updatedIndex,  withRegisterValues: withRegisterValues,  rollingInstructions: updatedRollingInstructions, instructionList: instructionListCopy)
         case .multiplied:
             let newValueAtX = localX * localY
             let registerAtX = actualInstruction.xRegister!
             mutableRegisterValues[registerAtX] = newValueAtX
             let updatedIndex = index + 1
+            let instructionListCopy = instructionList
+//            print("Mark says multiply to  newXvalue of \(newValueAtX)")
 
-            return requestInstructionExecutionOrder(startingAt:updatedIndex,  withRegisterValues: mutableRegisterValues,  rollingInstructions: updatedRollingInstructions, instructionList: instructionList)
+            return ExecuteInstruction.requestInstructionExecutionOrder(startingAt:updatedIndex,  withRegisterValues: mutableRegisterValues,  rollingInstructions: updatedRollingInstructions, instructionList: instructionListCopy)
         case .subtracted:
             let newValueAtX = localX - localY
             let registerAtX = actualInstruction.xRegister!
             mutableRegisterValues[registerAtX] = newValueAtX
             let updatedIndex = index + 1
+            let instructionListCopy = instructionList
+//            print("Mark says subtract to get newXvalue of \(newValueAtX)")
 
-            return requestInstructionExecutionOrder(startingAt:updatedIndex,  withRegisterValues: mutableRegisterValues,  rollingInstructions: updatedRollingInstructions, instructionList: instructionList)
+            return ExecuteInstruction.requestInstructionExecutionOrder(startingAt:updatedIndex,  withRegisterValues: mutableRegisterValues,  rollingInstructions: updatedRollingInstructions, instructionList: instructionListCopy)
         case .updated:
             let newValueAtX = localY
             let registerAtX = actualInstruction.xRegister!
             mutableRegisterValues[registerAtX] = newValueAtX
             let updatedIndex = index + 1
+            let instructionListCopy = instructionList
+//            print("Mark says update to  newXvalue of \(newValueAtX)")
 
-            return requestInstructionExecutionOrder(startingAt:updatedIndex,  withRegisterValues: mutableRegisterValues,  rollingInstructions: updatedRollingInstructions, instructionList: instructionList)
+            return ExecuteInstruction.requestInstructionExecutionOrder(startingAt:updatedIndex,  withRegisterValues: mutableRegisterValues,  rollingInstructions: updatedRollingInstructions, instructionList: instructionListCopy)
         }
     }
 

@@ -507,9 +507,10 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 7Y4CU665ST;
+				GCC_OPTIMIZATION_LEVEL = fast;
 				INFOPLIST_FILE = AdventOfCode/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				OTHER_SWIFT_FLAGS = "-Onone";
+				OTHER_SWIFT_FLAGS = "-O";
 				PRODUCT_BUNDLE_IDENTIFIER = com.vaderapps.AdventOfCode;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;

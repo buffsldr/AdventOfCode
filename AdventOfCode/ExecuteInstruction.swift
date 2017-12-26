@@ -15,8 +15,9 @@ final class ExecuteInstruction {
      var multiplyCount = 0
     var index = 0
 
-    init(instructionList: [RealInstruction]){
+    init(instructionList: [RealInstruction], initialDictionary: [String: Int]){
         self.instructionList = instructionList
+        simpleDictionary = initialDictionary
     }
 
     enum Result {
@@ -27,8 +28,10 @@ final class ExecuteInstruction {
     func step() -> Result {
 
         guard index < instructionList.count else {
-
+            let theValue = simpleDictionary["h"] ?? 0
             print("index at catch is \(index)")
+            print("value at H is \(theValue)")
+
             return .done
         }
         //        print("Mark at \(index)")

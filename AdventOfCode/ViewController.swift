@@ -28,8 +28,8 @@ class ViewController: UIViewController {
                                                        Register.h: 0
         ]
 
-        
-        let p = ExecuteInstruction(instructionList: list)
+        let initialDictionary = ["a": 1]
+        let p = ExecuteInstruction(instructionList: list, initialDictionary: initialDictionary)
         while p.step() == .ok { }
 
         print("Found count to be \(p.multiplyCount)")
